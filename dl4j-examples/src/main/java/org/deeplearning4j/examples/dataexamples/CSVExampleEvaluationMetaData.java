@@ -78,13 +78,13 @@ public class CSVExampleEvaluationMetaData {
         normalizer.transform(testData);         //Apply normalization to the test data. This is using statistics calculated from the *training* set
 
 
-        //Configure a simple model. We're not using an optimal configuration here, in order to show evaluation/errors, later
         final int numInputs = 4;
         int outputNum = 3;
-        int iterations = 50;
+        int iterations = 5000;
         long seed = 6;
 
-        System.out.println("Build model....");
+
+        System.out.println("\n\n  +++++ Test Set Examples MetaData +++++");
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
             .seed(seed)
             .iterations(iterations)
@@ -93,9 +93,13 @@ public class CSVExampleEvaluationMetaData {
             .learningRate(0.1)
             .regularization(true).l2(1e-4)
             .list()
-            .layer(0, new DenseLayer.Builder().nIn(numInputs).nOut(3).build())
-            .layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .activation(Activation.SOFTMAX).nIn(3).nOut(outputNum).build())
+            .layer(0, new DenseLayer.Builder().nIn(numInputs).nOut(3)
+                .build())
+            .layer(1, new DenseLayer.Builder().nIn(3).nOut(3)
+                .build())
+            .layer(2, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                .activation(Activation.SOFTMAX)
+                .nIn(3).nOut(outputNum).build())
             .backprop(true).pretrain(false)
             .build();
 
@@ -115,7 +119,7 @@ public class CSVExampleEvaluationMetaData {
         //Get a list of prediction errors, from the Evaluation object
         //Prediction errors like this are only available after calling iterator.setCollectMetaData(true)
         List<Prediction> predictionErrors = eval.getPredictionErrors();
-        System.out.println("\n\n+++++ Prediction Errors +++++");
+        System.out.println("\n\n+++++ Prediction Errors 1 +++++");
         for(Prediction p : predictionErrors){
             System.out.println("Predicted class: " + p.getPredictedClass() + ", Actual class: " + p.getActualClass()
                 + "\t" + p.getRecordMetaData(RecordMetaData.class).getLocation());
