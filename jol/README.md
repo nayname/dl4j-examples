@@ -1,19 +1,40 @@
-# Gradle Kotlin Examples
+# JOL examples
 
-Open built-in Terminal from the Android Studio or IntelliJ IDEA. 
-If you prefer, use the terminal app on your computer.
-In the terminal window, `cd` to the project root directory `dl4j-examples` if not already in.
-And then type `./gradlew NameOfExampleToRun` to run the examples as shown below.
-(_you can use IDE's run-configuration green run button, if you like._)
+##Text analyzis
 
-MLPMnistSingleLayerExample
-```
-./gradlew MLPMnistSingleLayerExample
-```
+ - feed list of news to get santiment analyze
 
-MLPMnistTwoLayerExample
-```
-./gradlew MLPMnistTwoLayerExample
-```
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/word2vecsentiment/
 
-etc.
+- suggest
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/basic/BasicRNNExample.java
+
+- data classification (sort animals by class in CSV)
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/dataexamples/BasicCSVClassifier.java
+
+- iris 
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/dataexamples/CSVExample.java
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/feedforward/classification/
+
+
+- draw plot(??)
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/dataexamples/CSVPlotter.java
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/feedforward/classification/PlotUtil.java
+
+##Image analyzis
+
+- image classification
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/convolution/
+
+
+##Log analyzis
+
+- UI 
+> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/userInterface/
+
+- log anomaly detection
+
+- ranker
+
+- dating site (text classification + local ranker)
+
