@@ -1,6 +1,6 @@
 # JOL examples
 
-##Text analyzis
+## Text analyzis
 
  - feed list of news to get santiment analyze
 
@@ -21,13 +21,13 @@
 > dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/dataexamples/CSVPlotter.java
 > dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/feedforward/classification/PlotUtil.java
 
-##Image analyzis
+## Image analyzis
 
 - image classification
 > dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/convolution/
 
 
-##Log analyzis
+## Log analyzis
 
 - UI 
 > dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/userInterface/
