@@ -3,7 +3,6 @@ package org.deeplearning4j.examples.convolution.sentenceclassification;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.deeplearning4j.eval.Evaluation;
-import org.deeplearning4j.examples.recurrent.word2vecsentiment.Word2VecSentimentRNN;
 import org.deeplearning4j.iterator.CnnSentenceDataSetIterator;
 import org.deeplearning4j.iterator.LabeledSentenceProvider;
 import org.deeplearning4j.iterator.provider.FileLabeledSentenceProvider;
@@ -19,6 +18,7 @@ import org.deeplearning4j.nn.conf.layers.PoolingType;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.jol.SentimentReviews;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
@@ -50,7 +50,7 @@ public class CnnSentenceClassificationExample {
         }
 
         //Download and extract data
-        Word2VecSentimentRNN.downloadData();
+        SentimentReviews.downloadData();
 
         //Basic configuration
         int batchSize = 32;
