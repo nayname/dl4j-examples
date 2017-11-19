@@ -1,4 +1,4 @@
-package org.jol;
+package org.jol.sentiment.reviews;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
