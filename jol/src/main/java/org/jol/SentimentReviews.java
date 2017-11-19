@@ -21,6 +21,7 @@ import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 /**Example: Given a movie review (raw text), classify that movie review as either positive or negative based on the words it contains.
@@ -54,20 +55,54 @@ public class SentimentReviews {
   public static final String DATA_PATH = FilenameUtils.concat(System.getProperty("java.io.tmpdir"), "dl4j_w2vSentiment/");
   /** Location (local file system) for the Google News vectors. Set this manually. */
   public static final String WORD_VECTORS_PATH = "/home/nayname/dl4j-examples/jol/sentiment/GoogleNews-vectors-negative300.bin.gz";
+  public static final File locationToSave = new File("/home/nayname/dl4j-examples/jol/sentiment/sentiment_model.zip");      //Where to save the network. Note: the file is in .zip format - can be opened externally
+  public static final boolean create = false;
+  
+  public static int batchSize = 64;     //Number of examples in each minibatch
+  public static int vectorSize = 300;   //Size of the word vectors. 300 in the Google News model
+  public static int nEpochs = 1;        //Number of epochs (full passes of training data) to train on
+  public static int truncateReviewsToLength = 256;  //Truncate reviews with length (# words) greater than this
 
 
   public static void main(String[] args) throws Exception {
+    if (create)
+      CreateModel();
+    
+    //DataSetIterators for training and testing respectively
+    WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
+    SentimentExampleIterator test = new SentimentExampleIterator(DATA_PATH, wordVectors, batchSize, truncateReviewsToLength, false);
+    
+    //Load the model
+    MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
+    
+//    System.out.println("Saved and loaded parameters are equal:      " + net.params().equals(restored.params()));
+//    System.out.println("Saved and loaded configurations are equal:  " + net.getLayerWiseConfigurations().equals(restored.getLayerWiseConfigurations()));
+
+    //After training: load a single example and generate predictions
+    File firstPositiveReviewFile = new File(FilenameUtils.concat(DATA_PATH, "aclImdb/test/pos/0_10.txt"));
+    String firstPositiveReview = FileUtils.readFileToString(firstPositiveReviewFile);
+
+    INDArray features = test.loadFeaturesFromString(firstPositiveReview, truncateReviewsToLength);
+    INDArray networkOutput = net.output(features);
+    int timeSeriesLength = networkOutput.size(2);
+    INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
+
+    System.out.println("\n\n-------------------------------");
+    System.out.println("First positive review: \n" + firstPositiveReview);
+    System.out.println("\n\nProbabilities at last time step:");
+    System.out.println("p(positive): " + probabilitiesAtLastWord.getDouble(0));
+    System.out.println("p(negative): " + probabilitiesAtLastWord.getDouble(1));
+
+    System.out.println("----- Example complete -----");
+  }
+
+  private static void CreateModel() throws Exception {
     if(WORD_VECTORS_PATH.startsWith("/PATH/TO/YOUR/VECTORS/")){
       throw new RuntimeException("Please set the WORD_VECTORS_PATH before running this example");
     }
 
     //Download and extract data
     downloadData();
-
-    int batchSize = 64;     //Number of examples in each minibatch
-    int vectorSize = 300;   //Size of the word vectors. 300 in the Google News model
-    int nEpochs = 1;        //Number of epochs (full passes of training data) to train on
-    int truncateReviewsToLength = 256;  //Truncate reviews with length (# words) greater than this
 
     Nd4j.getMemoryManager().setAutoGcWindow(10000);  //https://deeplearning4j.org/workspaces
 
@@ -107,33 +142,8 @@ public class SentimentReviews {
     }
 
     //Save the model
-    File locationToSave = new File("/home/nayname/dl4j-examples/jol/sentiment/sentiment_model.zip");      //Where to save the network. Note: the file is in .zip format - can be opened externally
     boolean saveUpdater = true;                                             //Updater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this if you want to train your network more in the future
     ModelSerializer.writeModel(net, locationToSave, saveUpdater);
-
-    //Load the model
-    MultiLayerNetwork restored = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
-
-
-    System.out.println("Saved and loaded parameters are equal:      " + net.params().equals(restored.params()));
-    System.out.println("Saved and loaded configurations are equal:  " + net.getLayerWiseConfigurations().equals(restored.getLayerWiseConfigurations()));
-
-    //After training: load a single example and generate predictions
-    File firstPositiveReviewFile = new File(FilenameUtils.concat(DATA_PATH, "aclImdb/test/pos/0_10.txt"));
-    String firstPositiveReview = FileUtils.readFileToString(firstPositiveReviewFile);
-
-    INDArray features = test.loadFeaturesFromString(firstPositiveReview, truncateReviewsToLength);
-    INDArray networkOutput = net.output(features);
-    int timeSeriesLength = networkOutput.size(2);
-    INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
-
-    System.out.println("\n\n-------------------------------");
-    System.out.println("First positive review: \n" + firstPositiveReview);
-    System.out.println("\n\nProbabilities at last time step:");
-    System.out.println("p(positive): " + probabilitiesAtLastWord.getDouble(0));
-    System.out.println("p(negative): " + probabilitiesAtLastWord.getDouble(1));
-
-    System.out.println("----- Example complete -----");
   }
 
   public static void downloadData() throws Exception {
