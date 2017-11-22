@@ -7,23 +7,17 @@ public class MLConf {
    */
   
   public String dataPath;
-  String modelLocation;
-  String wordVectorsPath;
+  public String modelLocation;
+  public String wordVectorsPath;
+  public String dataUrl;
   
-  String model_builder;
-  String type;
-  
-  int truncateReviewsToLength;
+  public int batchSize;
+  public int vectorSize;
+  public int nEpochs;
+  public int truncateReviewsToLength;
+  public String type;
   
   boolean save = false;
   public boolean create = false;
-
-  public MLConf(String dataPath_, String modelLocation_, String wordVectorsPath_,
-      boolean save_) {
-    dataPath = dataPath_;
-    modelLocation = modelLocation_;
-    wordVectorsPath = wordVectorsPath_;
-    save = save_;
-  }
 
 }

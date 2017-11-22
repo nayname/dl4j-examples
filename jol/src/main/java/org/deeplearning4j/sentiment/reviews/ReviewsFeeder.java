@@ -1,19 +1,16 @@
 package org.deeplearning4j.sentiment.reviews;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.jol.MLConf;
 import org.jol.MLItem;
-import org.jol.MLList;
 import org.jol.MLModel;
 
-import com.detectum.cache.CacheEntry;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**Example: Given a movie review (raw text), classify that movie review as either positive or negative based on the words it contains.
  * This is done by combining Word2Vec vectors and a recurrent neural network model. Each word in a review is vectorized
@@ -53,26 +50,25 @@ public class ReviewsFeeder {
     
     System.err.println("File load:"+(System.currentTimeMillis() - start));
 
-    File[] files = new File(conf.dataPath+"aclImdb/test/pos/").listFiles();
-
+    File[] files = new File(conf.dataPath+"aclImdb/test/neg/").listFiles();
+    
     HashMap<String, ArrayList<MLItem>> labeled_reviews = new HashMap<>();
-
+    
     for ( File file : files ) {
-      MLItem review = new MLItem(FileUtils.readFileToString(file), model, "dl4j");
+      MLItem review = new MLItem(FileUtils.readFileToString(file), model);
 
+    
       if (!labeled_reviews.containsKey(review.getLabel()))
         labeled_reviews.put(review.getLabel(), new ArrayList<MLItem>());
 
       labeled_reviews.get(review.getLabel()).add(review);
+      
+      for ( Entry<String, ArrayList<MLItem>> label : labeled_reviews.entrySet() ) 
+        System.err.println("Reviews marked as "+label.getKey()+": "+label.getValue().size());
     }
 
-    if (labeled_reviews.containsKey("positive")) {
-      System.err.println("Reviews marked as positive:"+labeled_reviews.get("positive").size());
-
-      for ( MLItem r : labeled_reviews.get("positive")){
-
-      }
-    }
+    for ( Entry<String, ArrayList<MLItem>> label : labeled_reviews.entrySet() ) 
+      System.err.println("Reviews marked as "+label.getKey()+": "+label.getValue().size());
 
     System.err.println("All done:"+(System.currentTimeMillis() - start));
   }
