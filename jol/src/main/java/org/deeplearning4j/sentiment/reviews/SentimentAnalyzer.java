@@ -27,53 +27,36 @@ import java.net.URL;
 
 public class SentimentAnalyzer {
 
-  public String DATA_URL = "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz";
-  public String DATA_PATH = FilenameUtils.concat(System.getProperty("java.io.tmpdir"), "dl4j_w2vSentiment/");
-  public String WORD_VECTORS_PATH = "/home/nayname/dl4j-examples/jol/sentiment/GoogleNews-vectors-negative300.bin.gz";
-  public File locationToSave = new File("/home/nayname/dl4j-examples/jol/sentiment/sentiment_model.zip");
-  public boolean create = false;
-
-  public int batchSize = 64;     //Number of examples in each minibatch
-  public int vectorSize = 300;   //Size of the word vectors. 300 in the Google News model
-  public int nEpochs = 5;        //Number of epochs (full passes of training data) to train on
-  public int truncateReviewsToLength = 256;  //Truncate reviews with length (# words) greater than this
-
-  public WordVectors wordVectors;
   public SentimentExampleIterator test;
 
-  private Logger logger;
+  private static String dataPath;
 
-  public SentimentAnalyzer() throws Exception {
-    //DataSetIterators for training and testing respectively
-    wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
-    test = new SentimentExampleIterator(DATA_PATH, wordVectors, batchSize, truncateReviewsToLength, false);
-    logger = LoggerFactory.getLogger(SentimentAnalyzer.class);
-  }
+//  public void fetchReviews (String input) throws Exception {
+//    //Load the model
+//    MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
+//
+//    //    System.out.println("Saved and loaded parameters are equal:      " + net.params().equals(restored.params()));
+//    //    System.out.println("Saved and loaded configurations are equal:  " + net.getLayerWiseConfigurations().equals(restored.getLayerWiseConfigurations()));
+//    INDArray features = test.loadFeaturesFromString(input, truncateReviewsToLength);
+//    INDArray networkOutput = net.output(features);
+//    int timeSeriesLength = networkOutput.size(2);
+//    INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
+//
+//    System.out.println("\n\n-------------------------------");
+//    System.out.println("First positive review: \n" + input);
+//    System.out.println("\n\nProbabilities at last time step:");
+//    System.out.println("p(positive): " + probabilitiesAtLastWord.getDouble(0));
+//    System.out.println("p(negative): " + probabilitiesAtLastWord.getDouble(1));
+//
+//    System.out.println("----- Example complete -----");
+//  }
 
-  public void fetchReviews (String input) throws Exception {
-    //Load the model
-    MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
-
-    //    System.out.println("Saved and loaded parameters are equal:      " + net.params().equals(restored.params()));
-    //    System.out.println("Saved and loaded configurations are equal:  " + net.getLayerWiseConfigurations().equals(restored.getLayerWiseConfigurations()));
-    INDArray features = test.loadFeaturesFromString(input, truncateReviewsToLength);
-    INDArray networkOutput = net.output(features);
-    int timeSeriesLength = networkOutput.size(2);
-    INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
-
-    System.out.println("\n\n-------------------------------");
-    System.out.println("First positive review: \n" + input);
-    System.out.println("\n\nProbabilities at last time step:");
-    System.out.println("p(positive): " + probabilitiesAtLastWord.getDouble(0));
-    System.out.println("p(negative): " + probabilitiesAtLastWord.getDouble(1));
-
-    System.out.println("----- Example complete -----");
-  }
-
-  public void createModel() throws Exception {
+  public static MultiLayerNetwork createModel() throws Exception {
     if(WORD_VECTORS_PATH.startsWith("/PATH/TO/YOUR/VECTORS/")){
       throw new RuntimeException("Please set the WORD_VECTORS_PATH before running this example");
     }
+    
+    dataPath = dp;
 
     //Download and extract data
     downloadData();
@@ -101,38 +84,30 @@ public class SentimentAnalyzer {
 
     //DataSetIterators for training and testing respectively
     WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(WORD_VECTORS_PATH));
-    SentimentExampleIterator train = new SentimentExampleIterator(DATA_PATH, wordVectors, batchSize, truncateReviewsToLength, true);
-    SentimentExampleIterator test = new SentimentExampleIterator(DATA_PATH, wordVectors, batchSize, truncateReviewsToLength, false);
+    SentimentExampleIterator train = new SentimentExampleIterator(dataPath, wordVectors, batchSize, truncateReviewsToLength, true);
+    SentimentExampleIterator test = new SentimentExampleIterator(dataPath, wordVectors, batchSize, truncateReviewsToLength, false);
 
     System.out.println("Starting training");
     for (int i = 0; i < nEpochs; i++) {
       net.fit(train);
       train.reset();
       System.out.println("Epoch " + i + " complete. Starting evaluation:");
-
-      evaluate(test);
     }
-
-    //Save the model
-    boolean saveUpdater = true;                                             //Updater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this if you want to train your network more in the future
-    ModelSerializer.writeModel(net, locationToSave, saveUpdater);
+    
+    net.evaluate(test);    
+    
+    return net;
   }
 
-  public void evaluate (SentimentExampleIterator data) throws Exception {
-    MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
-    Evaluation evaluation = net.evaluate(data);
-    logger.info(evaluation.stats());
-  }
-
-  public void downloadData() throws Exception {
+  public static void downloadData() throws Exception {
     //Create directory if required
-    File directory = new File(DATA_PATH);
+    File directory = new File(dataPath);
     if(!directory.exists()) directory.mkdir();
 
     //Download file:
-    String archizePath = DATA_PATH + "aclImdb_v1.tar.gz";
+    String archizePath = dataPath + "aclImdb_v1.tar.gz";
     File archiveFile = new File(archizePath);
-    String extractedPath = DATA_PATH + "aclImdb";
+    String extractedPath = dataPath + "aclImdb";
     File extractedFile = new File(extractedPath);
 
     if( !archiveFile.exists() ){
@@ -140,13 +115,13 @@ public class SentimentAnalyzer {
       FileUtils.copyURLToFile(new URL(DATA_URL), archiveFile);
       System.out.println("Data (.tar.gz file) downloaded to " + archiveFile.getAbsolutePath());
       //Extract tar.gz file to output directory
-      DataUtilities.extractTarGz(archizePath, DATA_PATH);
+      DataUtilities.extractTarGz(archizePath, dataPath);
     } else {
       //Assume if archive (.tar.gz) exists, then data has already been extracted
       System.out.println("Data (.tar.gz file) already exists at " + archiveFile.getAbsolutePath());
       if( !extractedFile.exists()){
         //Extract tar.gz file to output directory
-        DataUtilities.extractTarGz(archizePath, DATA_PATH);
+        DataUtilities.extractTarGz(archizePath, dataPath);
       } else {
         System.out.println("Data (extracted) already exists at " + extractedFile.getAbsolutePath());
       }
