@@ -52,11 +52,10 @@ public class ReviewsFeeder {
 
     File[] files = new File(conf.dataPath+"aclImdb/test/neg/").listFiles();
     
-    HashMap<String, ArrayList<MLItem>> labeled_reviews = new HashMap<>();
+ /*   HashMap<String, ArrayList<MLItem>> labeled_reviews = new HashMap<>();
     
     for ( File file : files ) {
       MLItem review = new MLItem(FileUtils.readFileToString(file), model);
-
     
       if (!labeled_reviews.containsKey(review.getLabel()))
         labeled_reviews.put(review.getLabel(), new ArrayList<MLItem>());
@@ -68,8 +67,11 @@ public class ReviewsFeeder {
     }
 
     for ( Entry<String, ArrayList<MLItem>> label : labeled_reviews.entrySet() ) 
-      System.err.println("Reviews marked as "+label.getKey()+": "+label.getValue().size());
-
+      System.err.println("Reviews marked as "+label.getKey()+": "+label.getValue().size()); */
+      
+    MLItem review = new MLItem(FileUtils.readFileToString(files[1]), model);
+    
+    System.err.println(review.eval());
     System.err.println("All done:"+(System.currentTimeMillis() - start));
   }
 }

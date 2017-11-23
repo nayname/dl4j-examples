@@ -33,7 +33,7 @@ public class MLModel {
   public MLModel (MLConf mlConf) throws Exception {
     conf = mlConf;
     wvs = WordVectorSerializer.loadStaticModel(new File(conf.wordVectorsPath));
-    
+
     if (conf.create) {
       model = SentimentAnalyzer.createModel(conf);
       saveToDisk();
@@ -50,9 +50,8 @@ public class MLModel {
     ModelSerializer.writeModel(model, conf.modelLocation, true);
   }
 
-  public INDArray feed(String input) throws IOException {
-    INDArray features = prepareFeatures(input, conf.truncateReviewsToLength, wvs);
-    return((MultiLayerNetwork)model).output(features);
+  public INDArray prepareFeatures(String input) throws IOException {
+    return prepareFeatures(input, conf.truncateReviewsToLength, wvs);
   }
 
   /**
@@ -62,13 +61,13 @@ public class MLModel {
    * @param wordVectors
    * @return
    */
-      
+
   public INDArray prepareFeatures(String reviewContents, int maxLength, WordVectors wordVectors){
     int vectorSize = wordVectors.getWordVector(wordVectors.vocab().wordAtIndex(0)).length;
 
     List<String> tokens = tokenizerFactory.create(reviewContents).getTokens();
     List<String> tokensFiltered = new ArrayList<>();
-    
+
     for(String t : tokens ){
       if(wordVectors.hasWord(t)) tokensFiltered.add(t);
     }
@@ -83,8 +82,18 @@ public class MLModel {
 
     return features;
   }
-  
+
   public List<String> getLabels() {
     return Arrays.asList("positive","negative");
+  }
+
+  public INDArray getOutput(INDArray features) {
+    return ((MultiLayerNetwork)model).output(features);
+  }
+
+  public String eval() throws IOException {
+    SentimentExampleIterator test = new SentimentExampleIterator(conf.dataPath, wvs, conf.batchSize, conf.truncateReviewsToLength, false);
+    Evaluation evaluation = ((MultiLayerNetwork)model).evaluate(test);
+    return evaluation.stats();
   }
 }

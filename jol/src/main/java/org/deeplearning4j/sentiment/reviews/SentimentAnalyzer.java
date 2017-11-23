@@ -57,7 +57,13 @@ public class SentimentAnalyzer {
 
     Nd4j.getMemoryManager().setAutoGcWindow(10000);  //https://deeplearning4j.org/workspaces
 
-    /*//Set up network configuration
+    
+    //DataSetIterators for training and testing respectively
+    WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(global_conf.wordVectorsPath));
+    SentimentExampleIterator train = new SentimentExampleIterator(global_conf.dataPath, wordVectors, global_conf.batchSize, global_conf.truncateReviewsToLength, true);
+    SentimentExampleIterator test = new SentimentExampleIterator(global_conf.dataPath, wordVectors, global_conf.batchSize, global_conf.truncateReviewsToLength, false);
+
+    //Set up network configuration
     MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
     .updater(Updater.ADAM)  //To configure: .updater(Adam.builder().beta1(0.9).beta2(0.999).build())
     .regularization(true).l2(1e-5)
@@ -81,15 +87,8 @@ public class SentimentAnalyzer {
       net.fit(train);
       train.reset();
       System.out.println("Epoch " + i + " complete. Starting evaluation:");
-    }*/
-    
-    //DataSetIterators for training and testing respectively
-    WordVectors wordVectors = WordVectorSerializer.loadStaticModel(new File(global_conf.wordVectorsPath));
-    SentimentExampleIterator train = new SentimentExampleIterator(global_conf.dataPath, wordVectors, global_conf.batchSize, global_conf.truncateReviewsToLength, true);
-    SentimentExampleIterator test = new SentimentExampleIterator(global_conf.dataPath, wordVectors, global_conf.batchSize, global_conf.truncateReviewsToLength, false);
+    }
 
-    MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(global_conf.modelLocation);
-    
     //Run evaluation. This is on 25k reviews, so can take some time
     Evaluation evaluation = net.evaluate(test);
     System.out.println(evaluation.stats());
