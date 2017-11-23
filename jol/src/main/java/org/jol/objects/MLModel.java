@@ -1,4 +1,4 @@
-package org.jol;
+package org.jol.objects;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,6 @@ import org.deeplearning4j.sentiment.reviews.SentimentExampleIterator;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.util.ModelSerializer;
-import org.jol.objects.MLConf;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;

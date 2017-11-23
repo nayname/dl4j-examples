@@ -1,4 +1,4 @@
-package org.deeplearning4j.sentiment.reviews;
+package org.jol;
 
 import org.apache.commons.io.FileUtils;
 import org.jol.objects.MLConf;

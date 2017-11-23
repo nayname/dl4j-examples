@@ -2,9 +2,16 @@
 
 ## Text analyzis
 
- - feed list of news to get santiment analyze
+ - feed list of reviews (IMDB) to get santiment analyze. Use previously trained model, or train model and than feed new reviews;
+First, create model from conf. 
 
-> dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/word2vecsentiment/
+`MLModel model = new MLModel(conf);`
+
+From each review (text) we create Object, than feed it to model oand label this review as positive or negative.
+
+`MLItem review = new MLItem(text, model);`
+
+> /dl4j-examples/jol/src/main/java/org/deeplearning4j/sentiment/reviews
 
 - suggest
 > dl4j-examples/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/basic/BasicRNNExample.java
