@@ -1,4 +1,4 @@
-package org.deeplearning4j.sentiment.reviews;
+package org.deeplearning4j.classifier.reviews;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

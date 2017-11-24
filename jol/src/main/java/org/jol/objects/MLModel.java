@@ -7,13 +7,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.deeplearning4j.classifier.animals.BasicCSVClassifier;
+import org.deeplearning4j.classifier.reviews.SentimentAnalyzer;
+import org.deeplearning4j.classifier.reviews.SentimentExampleIterator;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.deeplearning4j.sentiment.reviews.SentimentAnalyzer;
-import org.deeplearning4j.sentiment.reviews.SentimentExampleIterator;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.util.ModelSerializer;
@@ -32,10 +33,11 @@ public class MLModel {
 
   public MLModel (MLConf mlConf) throws Exception {
     conf = mlConf;
-    wvs = WordVectorSerializer.loadStaticModel(new File(conf.wordVectorsPath));
+   // wvs = WordVectorSerializer.loadStaticModel(new File(conf.wordVectorsPath));
 
     if (conf.create) {
-      model = SentimentAnalyzer.createModel(conf);
+     // model = SentimentAnalyzer.createModel(conf);
+      model = BasicCSVClassifier.createModel(conf);
       saveToDisk();
     }
     else if (conf.type.equals("dl4j")) {
