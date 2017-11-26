@@ -1,24 +1,24 @@
 package org.jol.objects;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
 import org.deeplearning4j.classifier.animals.BasicCSVClassifier;
-import org.deeplearning4j.classifier.reviews.SentimentAnalyzer;
 import org.deeplearning4j.classifier.reviews.SentimentExampleIterator;
 import org.deeplearning4j.eval.Evaluation;
-import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.util.ModelSerializer;
+import org.deeplearning4j.utilities.DataUtilities;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
+import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -30,6 +30,7 @@ public class MLModel {
 
   private WordVectors wvs;
   private DefaultTokenizerFactory tokenizerFactory;
+  private DataNormalization normalizer = new NormalizerStandardize();
 
   public MLModel (MLConf mlConf) throws Exception {
     conf = mlConf;
@@ -43,13 +44,21 @@ public class MLModel {
     else if (conf.type.equals("dl4j")) {
       model = ModelSerializer.restoreMultiLayerNetwork(conf.modelLocation);
     }
-
+    
     tokenizerFactory = new DefaultTokenizerFactory();
     tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+    
+    DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
+        conf.batchSizeTest, conf.labelIndex, conf.numClasses);
+    normalizer.fit(testData);
   }
 
   public void saveToDisk() throws IOException  {
     ModelSerializer.writeModel(model, conf.modelLocation, true);
+  }
+  
+  public void normalize (INDArray slice) {
+    normalizer.transform(slice);
   }
 
   public INDArray prepareFeatures(String input) throws IOException {
