@@ -57,9 +57,9 @@ public class MLModel {
 
     labels = DataUtilities.readEnumCSV(conf.classifier);
 
-    /*   DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
+    DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
         conf.batchSizeTest, conf.labelIndex, conf.numClasses);
-    normalizer.fit(testData); */
+    normalizer.fit(testData); 
   }
 
   public void saveToDisk() throws IOException  {

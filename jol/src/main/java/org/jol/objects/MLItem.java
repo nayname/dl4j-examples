@@ -15,7 +15,7 @@ public class MLItem {
   private INDArray features;
   private INDArray output;
   
-  private HashMap<String, Float> params = new HashMap<>();
+  private HashMap<Integer, Float> params = new HashMap<>();
   private String label;
   
 //  private static Map<Integer,String> eats = DataUtilities.readEnumCSV("/DataExamples/animals/eats.csv");
@@ -29,21 +29,24 @@ public class MLItem {
     model = model_;
     features = features_;
     
-  //  setParams();
-  //  model.normalize(features_);
+    setParams();
+    model.normalize(features_);
     
     output = model.getOutput(features);
-	System.err.println(output);
   }
 
   private void setParams() {
     for (int i = 0; i < features.columns(); i++) 
-      params.put(i+"", features.getFloat(i));
+      params.put(i, features.getFloat(i));
   }
 
   public String getLabel() {
     label = model.getLabels().get(maxIndex(getFloatArrayFromSlice(output)));
     return label;
+  }
+  
+  public HashMap<Integer, Float> getParams() {
+    return params;
   }
   
   public INDArray getOutput() {

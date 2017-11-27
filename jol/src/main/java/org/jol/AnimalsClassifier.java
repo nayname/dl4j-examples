@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.deeplearning4j.classifier.animals.Animal;
 import org.deeplearning4j.utilities.DataUtilities;
 import org.jol.objects.MLConf;
 import org.jol.objects.MLItem;
@@ -14,11 +15,13 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 
 public class AnimalsClassifier {
 
-  private static Logger log = LoggerFactory.getLogger(AnimalsClassifier.class);
+  private static Map<Integer,String> eats = DataUtilities.readEnumCSV("/home/nayname/dl4j-examples/jol/src/main/resources/DataExamples/animals/eats.csv");
+  private static Map<Integer,String> sounds = DataUtilities.readEnumCSV("/home/nayname/dl4j-examples/jol/src/main/resources/DataExamples/animals/sounds.csv");
 
   public static void main(String[] args) throws Exception {
     long start = System.currentTimeMillis();
@@ -36,7 +39,7 @@ public class AnimalsClassifier {
 
     System.err.println("File load:"+(System.currentTimeMillis() - start));
 
-    Map<String, ArrayList<MLItem>> animals = new HashMap<String,ArrayList<MLItem>>();
+    Map<String, ArrayList<Animal>> animals = new HashMap<String,ArrayList<Animal>>();
 
     INDArray features = testData.getFeatureMatrix();
     for (int i = 0; i < features.rows() ; i++) {
@@ -49,9 +52,9 @@ public class AnimalsClassifier {
       if (!animals.containsKey(label))
         animals.put(label, new ArrayList<>());
 
-      animals.get(label).add(animal);
+      animals.get(label).add(new Animal(animal, eats, sounds));
     }
 
-    System.err.println(animals);
+    System.err.println(new Gson().toJson(animals));
   }
 }

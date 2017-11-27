@@ -36,10 +36,6 @@ public class BasicCSVClassifier {
 
   private static Logger log = LoggerFactory.getLogger(BasicCSVClassifier.class);
 
-  private static Map<Integer,String> eats = DataUtilities.readEnumCSV("/DataExamples/animals/eats.csv");
-  private static Map<Integer,String> sounds = DataUtilities.readEnumCSV("/DataExamples/animals/sounds.csv");
-  private static Map<Integer,String> classifiers = DataUtilities.readEnumCSV("/DataExamples/animals/classifiers.csv");
-
   public static MultiLayerNetwork createModel(MLConf global_conf) throws Exception {
     DataSet trainingData = DataUtilities.readCSVDataset(
         "/DataExamples/animals/animals_train.csv",
