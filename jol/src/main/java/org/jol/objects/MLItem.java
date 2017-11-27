@@ -15,12 +15,11 @@ public class MLItem {
   private INDArray features;
   private INDArray output;
   
-  private HashMap<String, Object> params = new HashMap<>();
+  private HashMap<String, Float> params = new HashMap<>();
   private String label;
   
-  private static Map<Integer,String> eats = DataUtilities.readEnumCSV("/DataExamples/animals/eats.csv");
-  private static Map<Integer,String> sounds = DataUtilities.readEnumCSV("/DataExamples/animals/sounds.csv");
-  private static Map<Integer,String> classifiers = DataUtilities.readEnumCSV("/DataExamples/animals/classifiers.csv");
+//  private static Map<Integer,String> eats = DataUtilities.readEnumCSV("/DataExamples/animals/eats.csv");
+//  private static Map<Integer,String> sounds = DataUtilities.readEnumCSV("/DataExamples/animals/sounds.csv");
 
   public MLItem(String input, MLModel model_) throws Exception{
     this(model_.prepareFeatures(input), model_);
@@ -30,21 +29,20 @@ public class MLItem {
     model = model_;
     features = features_;
     
-    setParams();
-    model.normalize(features_);
+  //  setParams();
+  //  model.normalize(features_);
     
     output = model.getOutput(features);
+	System.err.println(output);
   }
 
   private void setParams() {
-    addParam("yearsLived", features.getInt(0));
-    addParam("eats", eats.get(features.getInt(1)));
-    addParam("sounds", sounds.get(features.getInt(2)));
-    addParam("weight", features.getFloat(3));
+    for (int i = 0; i < features.columns(); i++) 
+      params.put(i+"", features.getFloat(i));
   }
 
   public String getLabel() {
-    label = classifiers.get(maxIndex(getFloatArrayFromSlice(output)));
+    label = model.getLabels().get(maxIndex(getFloatArrayFromSlice(output)));
     return label;
   }
   
@@ -55,11 +53,7 @@ public class MLItem {
   public String eval() throws IOException {
     return model.eval();
   }
-  
-  public void addParam (String key, Object value) {
-    params.put(key, value);
-  }
-  
+    
   public String toString() {
     return "params:"+params+", label: "+label;
   }

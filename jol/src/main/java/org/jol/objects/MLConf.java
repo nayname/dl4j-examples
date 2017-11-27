@@ -21,6 +21,8 @@ public class MLConf {
   public int nEpochs;
   public int truncateReviewsToLength;
   public String type;
+  
+  public String classifier;
 
   boolean save = false;
   public boolean create = false;

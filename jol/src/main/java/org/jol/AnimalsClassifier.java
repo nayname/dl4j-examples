@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 public class AnimalsClassifier {
 
   private static Logger log = LoggerFactory.getLogger(AnimalsClassifier.class);
-  
+
   public static void main(String[] args) throws Exception {
     long start = System.currentTimeMillis();
 
@@ -28,32 +28,30 @@ public class AnimalsClassifier {
 
     if (args.length > 0 && args[0].equals("create")) 
       conf.create = true;
-    
+
     MLModel model = new MLModel(conf);
-    
+
     DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
         conf.batchSizeTest, conf.labelIndex, conf.numClasses);
-    // make the data model for records prior to normalization, because it
-    // changes the data.
-    
+
     System.err.println("File load:"+(System.currentTimeMillis() - start));
-    
-	Map<String, ArrayList<MLItem>> animals = new HashMap<String,ArrayList<MLItem>>();
-	
-	INDArray features = testData.getFeatureMatrix();
+
+    Map<String, ArrayList<MLItem>> animals = new HashMap<String,ArrayList<MLItem>>();
+
+    INDArray features = testData.getFeatureMatrix();
     for (int i = 0; i < features.rows() ; i++) {
       INDArray slice = features.slice(i);
-      
+
       MLItem animal = new MLItem(slice, model);
 
       String label = animal.getLabel();
-      
+
       if (!animals.containsKey(label))
         animals.put(label, new ArrayList<>());
 
       animals.get(label).add(animal);
     }
-    
+
     System.err.println(animals);
   }
 }

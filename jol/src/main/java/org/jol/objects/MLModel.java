@@ -1,13 +1,18 @@
 package org.jol.objects;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.deeplearning4j.classifier.animals.BasicCSVClassifier;
+import org.deeplearning4j.classifier.reviews.SentimentAnalyzer;
 import org.deeplearning4j.classifier.reviews.SentimentExampleIterator;
 import org.deeplearning4j.eval.Evaluation;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -22,6 +27,7 @@ import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 
 public class MLModel {
 
@@ -31,32 +37,35 @@ public class MLModel {
   private WordVectors wvs;
   private DefaultTokenizerFactory tokenizerFactory;
   private DataNormalization normalizer = new NormalizerStandardize();
+  Map<Integer, String> labels;
 
   public MLModel (MLConf mlConf) throws Exception {
     conf = mlConf;
-   // wvs = WordVectorSerializer.loadStaticModel(new File(conf.wordVectorsPath));
+    wvs = WordVectorSerializer.loadStaticModel(new File(conf.wordVectorsPath));
 
     if (conf.create) {
-     // model = SentimentAnalyzer.createModel(conf);
-      model = BasicCSVClassifier.createModel(conf);
+      model = SentimentAnalyzer.createModel(conf);
+      // model = BasicCSVClassifier.createModel(conf);
       saveToDisk();
     }
     else if (conf.type.equals("dl4j")) {
       model = ModelSerializer.restoreMultiLayerNetwork(conf.modelLocation);
     }
-    
+
     tokenizerFactory = new DefaultTokenizerFactory();
     tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
-    
-    DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
+
+    labels = DataUtilities.readEnumCSV(conf.classifier);
+
+    /*   DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
         conf.batchSizeTest, conf.labelIndex, conf.numClasses);
-    normalizer.fit(testData);
+    normalizer.fit(testData); */
   }
 
   public void saveToDisk() throws IOException  {
     ModelSerializer.writeModel(model, conf.modelLocation, true);
   }
-  
+
   public void normalize (INDArray slice) {
     normalizer.transform(slice);
   }
@@ -94,8 +103,9 @@ public class MLModel {
     return features;
   }
 
-  public List<String> getLabels() {
-    return Arrays.asList("positive","negative");
+  public Map<Integer, String> getLabels() {
+    // return Arrays.asList("positive","negative");
+    return labels;
   }
 
   public INDArray getOutput(INDArray features) {

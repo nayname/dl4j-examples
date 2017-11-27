@@ -40,39 +40,39 @@ public class ReviewsFeeder {
   public static void main(String[] args) throws Exception {
     long start = System.currentTimeMillis();
 
-    MLConf conf = new Gson().fromJson(FileUtils.readFileToString(new File("/home/nayname/dl4j-examples/jol/recources/sentiment/sentiment_model_conf.json")),
+    MLConf conf = new Gson().fromJson(FileUtils.readFileToString(new File("/home/nayname/dl4j-examples/jol/recources/reviews/sentiment_model_conf.json")),
         MLConf.class);
-    
+
     if (args.length > 0 && args[0].equals("create")) 
       conf.create = true;
 
     MLModel model = new MLModel(conf);
-    
+
     System.err.println("File load:"+(System.currentTimeMillis() - start));
 
     File[] files = new File(conf.dataPath+"aclImdb/test/neg/").listFiles();
-    
- /*   HashMap<String, ArrayList<MLItem>> labeled_reviews = new HashMap<>();
-    
+
+    /*   HashMap<String, ArrayList<MLItem>> labeled_reviews = new HashMap<>();
+
     for ( File file : files ) {
       MLItem review = new MLItem(FileUtils.readFileToString(file), model);
-    
+
       if (!labeled_reviews.containsKey(review.getLabel()))
         labeled_reviews.put(review.getLabel(), new ArrayList<MLItem>());
 
       labeled_reviews.get(review.getLabel()).add(review);
-      
+
       for ( Entry<String, ArrayList<MLItem>> label : labeled_reviews.entrySet() ) 
         System.err.println("Reviews marked as "+label.getKey()+": "+label.getValue().size());
     }
 
     for ( Entry<String, ArrayList<MLItem>> label : labeled_reviews.entrySet() ) 
       System.err.println("Reviews marked as "+label.getKey()+": "+label.getValue().size()); */
-      
+
     String text = FileUtils.readFileToString(files[1]);
-    
+
     MLItem review = new MLItem(text, model);
-    
+
     System.err.println(review.eval());
     System.err.println("All done:"+(System.currentTimeMillis() - start));
   }

@@ -79,7 +79,7 @@ public class BasicCSVClassifier {
     System.out.println("Starting training");
     for (int i = 0; i < global_conf.nEpochs; i++) {
       model.fit(trainingData);
-//      trainingData.reset();
+      //      trainingData.reset();
       System.out.println("Epoch " + i + " complete. Starting evaluation:");
     }
 
