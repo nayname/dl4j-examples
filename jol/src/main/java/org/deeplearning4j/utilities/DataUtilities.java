@@ -80,14 +80,19 @@ public class DataUtilities {
     return iterator.next();
   }
 
-  public static Map<Integer,String> readEnumCSV(String csvFileClasspath) {
+  public static Map<Integer, String[]> readEnumCSV(String csvFileClasspath) {
     try{
       List<String> lines = IOUtils.readLines(new FileInputStream(csvFileClasspath));
-      Map<Integer,String> enums = new HashMap<>();
+      Map<Integer, String[]> enums = new HashMap<Integer, String[]>();
+	  
+	  int count = 0;
+	  
       for(String line:lines){
         String[] parts = line.split(",");
-        enums.put(Integer.parseInt(parts[0]),parts[1]);
+        enums.put(count, parts);
+		count++;
       }
+	  
       return enums;
     } catch (Exception e){
       e.printStackTrace();
