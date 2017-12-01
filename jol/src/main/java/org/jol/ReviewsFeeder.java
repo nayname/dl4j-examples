@@ -22,7 +22,7 @@ public class ReviewsFeeder {
     ObjectMapper objectMapper = new ObjectMapper();
 
     MLConf conf = objectMapper.readValue(FileUtils.readFileToString(
-        new File("/home/nayname/dl4j-examples/jol/recources/reviews/sentiment_model_conf.json")), MLConf.class);
+        new File("/root/dl4j-examples/jol/src/main/resources/review/sentiment_model_conf.json")), MLConf.class);
     
     if (args.length > 0 && args[0].equals("create")) 
       conf.create = true;

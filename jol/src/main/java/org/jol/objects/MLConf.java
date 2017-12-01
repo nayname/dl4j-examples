@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.deeplearning4j.nn.api.Model;
 import org.jol.objects.conf.BasicCSVClassifier;
+import org.jol.objects.conf.CSVClassifier;
 import org.jol.objects.conf.SentimentAnalyzer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
@@ -16,8 +17,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = BasicCSVClassifier.class, name = "BasicCSVClassifier"),
-    @JsonSubTypes.Type(value = SentimentAnalyzer.class, name = "SentimentAnalyzer") }
+  @JsonSubTypes.Type(value = BasicCSVClassifier.class, name = "BasicCSVClassifier"),
+  @JsonSubTypes.Type(value = CSVClassifier.class, name = "CSVClassifier"),
+  @JsonSubTypes.Type(value = SentimentAnalyzer.class, name = "SentimentAnalyzer") }
 )
 
 public abstract class MLConf {
