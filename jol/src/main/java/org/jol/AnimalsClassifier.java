@@ -23,7 +23,7 @@ public class AnimalsClassifier {
     ObjectMapper objectMapper = new ObjectMapper();
 
     MLConf conf = objectMapper.readValue(FileUtils.readFileToString(
-        new File("/home/nayname/dl4j-examples/jol/recources/animals/animals_model_conf.json")), MLConf.class);
+        new File("/root/dl4j-examples/jol/src/main/resources/animals/animals_model_conf.json")), MLConf.class);
 
     if (args.length > 0 && args[0].equals("create")) 
       conf.create = true;
@@ -31,11 +31,11 @@ public class AnimalsClassifier {
     Map<String, ArrayList<Animal>> animals = new HashMap<String,ArrayList<Animal>>();
     
     //model inputs
-    DataSet testData = DataUtilities.readCSVDataset(new ClassPathResource("/DataExamples/animals/animals.csv").getFile(),
+    DataSet testData = DataUtilities.readCSVDataset(new ClassPathResource("/animals/DataExamples/animals/animals.csv").getFile(),
         conf.batchSizeTest, conf.numInputs, conf.numOutputs);
 		
     //labels for MLItems objects
-	Map<Integer,String[]> data = DataUtilities.readEnumCSV(new ClassPathResource("/DataExamples/animals/animals_labels.csv").getFile());
+	Map<Integer,String[]> data = DataUtilities.readEnumCSV(new ClassPathResource("/animals/DataExamples/animals/animals_labels.csv").getFile());
 
     MLModel model = new DL4JModel(conf);
 

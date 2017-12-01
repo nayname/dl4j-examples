@@ -1,8 +1,10 @@
 package org.jol.objects.conf;
 
 
+import java.io.File;
 import java.io.IOException;
 
+import org.datavec.api.util.ClassPathResource;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -55,11 +57,11 @@ public class BasicCSVClassifier extends MLConf {
 
   public Model train (MLConf global_conf) throws Exception {
     DataSet trainingData = DataUtilities.readCSVDataset(
-        "/DataExamples/animals/animals_train.csv",
+        new ClassPathResource("/DataExamples/animals/animals_train.csv").getFile(),
         global_conf.batchSizeTraining, global_conf.numInputs, global_conf.numOutputs);
 
 
-    DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
+    DataSet testData = DataUtilities.readCSVDataset(new ClassPathResource("/DataExamples/animals/animals.csv").getFile(),
         global_conf.batchSizeTest, global_conf.numInputs, global_conf.numOutputs);
 
     //We need to normalize our data. We'll use NormalizeStandardize (which gives us mean 0, unit variance):

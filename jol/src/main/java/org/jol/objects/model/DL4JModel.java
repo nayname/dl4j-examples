@@ -1,5 +1,6 @@
 package org.jol.objects.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class DL4JModel implements MLModel {
     else 
       restore(conf.modelLocation);
 
-    for ( Entry<Integer, String[]> l : DataUtilities.readEnumCSV(conf.classifier).entrySet() ) {
+    for ( Entry<Integer, String[]> l : DataUtilities.readEnumCSV(new File(conf.classifier)).entrySet() ) {
       labels.put(l.getKey(), l.getValue()[1]);
     }
   }
