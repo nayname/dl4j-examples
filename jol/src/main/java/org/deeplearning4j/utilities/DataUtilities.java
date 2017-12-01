@@ -71,18 +71,18 @@ public class DataUtilities {
    * @throws InterruptedException
    */
   public static DataSet readCSVDataset(
-      String csvFileClasspath, int batchSize, int labelIndex, int numClasses)
+      File csvFile, int batchSize, int labelIndex, int numClasses)
           throws IOException, InterruptedException{
 
     RecordReader rr = new CSVRecordReader();
-    rr.initialize(new FileSplit(new ClassPathResource(csvFileClasspath).getFile()));
+    rr.initialize(new FileSplit(csvFile));
     DataSetIterator iterator = new RecordReaderDataSetIterator(rr,batchSize,labelIndex,numClasses);
     return iterator.next();
   }
 
-  public static Map<Integer, String[]> readEnumCSV(String csvFileClasspath) {
+  public static Map<Integer, String[]> readEnumCSV(File csvFile) {
     try{
-      List<String> lines = IOUtils.readLines(new FileInputStream(csvFileClasspath));
+      List<String> lines = IOUtils.readLines(new FileInputStream(csvFile));
       Map<Integer, String[]> enums = new HashMap<Integer, String[]>();
 	  
 	  int count = 0;

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.datavec.api.util.ClassPathResource;
 import org.deeplearning4j.classifier.animals.Animal;
 import org.deeplearning4j.utilities.DataUtilities;
 import org.jol.objects.MLConf;
@@ -13,6 +14,7 @@ import org.jol.objects.MLModel;
 import org.jol.objects.model.DL4JModel;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AnimalsClassifier {
@@ -29,11 +31,11 @@ public class AnimalsClassifier {
     Map<String, ArrayList<Animal>> animals = new HashMap<String,ArrayList<Animal>>();
     
     //model inputs
-    DataSet testData = DataUtilities.readCSVDataset("/DataExamples/animals/animals.csv",
+    DataSet testData = DataUtilities.readCSVDataset(new ClassPathResource("/DataExamples/animals/animals.csv").getFile(),
         conf.batchSizeTest, conf.numInputs, conf.numOutputs);
 		
     //labels for MLItems objects
-	Map<Integer,String[]> data = DataUtilities.readEnumCSV("/home/nayname/dl4j-examples/jol/src/main/resources/DataExamples/animals/animals_labels.csv");
+	Map<Integer,String[]> data = DataUtilities.readEnumCSV(new ClassPathResource("/DataExamples/animals/animals_labels.csv").getFile());
 
     MLModel model = new DL4JModel(conf);
 

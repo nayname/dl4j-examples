@@ -45,6 +45,7 @@ public abstract class MLConf {
   
   public int seed;
   public int iterations;
+  public double testTrainSplit;
   
   /**
    * conf for training datavec
